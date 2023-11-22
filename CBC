@@ -1,0 +1,45 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define BLOCK_SIZE 8
+
+void cbcEncrypt(const unsigned char *plaintext, const unsigned char *key, const unsigned char *iv, size_t len) {
+    unsigned char block[BLOCK_SIZE];
+    unsigned char xorResult[BLOCK_SIZE];
+    unsigned char previousBlock[BLOCK_SIZE];
+    memcpy(previousBlock, iv, BLOCK_SIZE); 
+
+    printf("Ciphertext (CBC mode):\n");
+    size_t i,j;
+    
+    for ( i = 0; i < len; i += BLOCK_SIZE) {
+        memcpy(block, plaintext + i, BLOCK_SIZE);
+
+        for ( j = 0; j < BLOCK_SIZE; j++) {
+            xorResult[j] = block[j] ^ previousBlock[j];
+        }
+
+        for ( j = 0; j < BLOCK_SIZE; j++) {
+            xorResult[j] ^= key[j];
+        }
+
+        for ( j = 0; j < BLOCK_SIZE; j++) {
+            printf("%02x", xorResult[j]); 
+            previousBlock[j] = xorResult[j]; 
+        }
+    }
+    printf("\n");
+}
+int main()
+{
+    unsigned char plaintext[] = "This is a CBC encryption example using a simple XOR operation.";
+    unsigned char key[BLOCK_SIZE] = {0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0x11, 0x22}; 
+    unsigned char iv[BLOCK_SIZE] = {0x12, 0x34, 0x56, 0x78, 0x90, 0xAB, 0xCD, 0xEF};
+
+    size_t plaintextLen = strlen((char *)plaintext);
+
+    cbcEncrypt(plaintext, key, iv, plaintextLen);
+
+    return 0;
+}
