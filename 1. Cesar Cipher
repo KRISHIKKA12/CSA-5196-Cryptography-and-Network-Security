@@ -1,0 +1,32 @@
+#include<stdio.h>
+#include<ctype.h>
+int main()
+{
+	int i,j,key;
+	char ch,text[500];
+	printf("Enter the text: ");
+	scanf("%s",&text);
+	printf("\nEnter the key value: ");
+	scanf("%d",&key);
+	for(i=0;text[i]!='\0';i++)
+	{
+		ch=text[i];
+	if(isalnum(ch))
+	{
+		ch=((ch-'a' + key) %26 + 'a');
+	}
+	text[i]=ch;
+}
+printf("\nEnter the Encrypted Message: %s ",text);
+	for(j=0;text[j]!='\0';j++)
+	{
+		ch=text[j];
+	if(isalnum(ch))
+	{
+		ch=((ch -'a' - key +26) %26 + 'a');
+	}
+	text[j]=ch;
+}
+printf("\nEnter the Decrypted Message: %s ",text);
+return 0;
+}
