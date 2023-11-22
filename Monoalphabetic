@@ -1,0 +1,52 @@
+#include <stdio.h>
+#include <ctype.h>
+#include <string.h>
+
+#define ALPHABET_SIZE 26
+void initializeCipherMapping(char keyword[], char cipherMapping[]) {
+    int i, j;
+    int keywordLength = strlen(keyword);
+    strcpy(cipherMapping, keyword);
+    for (i = 0, j = keywordLength; i < ALPHABET_SIZE; i++) {
+        char currentLetter = 'A' + i;
+        if (strchr(keyword, currentLetter) == NULL) {
+            cipherMapping[j++] = currentLetter;
+        }
+    }
+    cipherMapping[ALPHABET_SIZE] = '\0'; 
+}
+void encryptMessage(char plaintext[], char cipherMapping[], char ciphertext[]) 
+{
+    int i;
+    int messageLength = strlen(plaintext);
+
+    for (i = 0; i < messageLength; i++) {
+        char currentChar = plaintext[i];
+        if (isalpha(currentChar)) {
+            char upperChar = toupper(currentChar);
+            int index = upperChar - 'A';
+            ciphertext[i] = isupper(currentChar) ? cipherMapping[index] : tolower(cipherMapping[index]);
+        } else {
+            ciphertext[i] = currentChar; 
+        }
+    }
+    ciphertext[messageLength] = '\0'; 
+}
+
+int main() 
+{
+    char keyword[] = "CIPHER";
+    char plaintext[] = "BEAUTIFUL BUTTERFLY";
+    char cipherMapping[ALPHABET_SIZE + 1];
+    char ciphertext[strlen(plaintext) + 1];
+
+    initializeCipherMapping(keyword, cipherMapping);
+
+    printf("Plaintext: %s\n", plaintext);
+
+    encryptMessage(plaintext, cipherMapping, ciphertext);
+
+    printf("Ciphertext: %s\n", ciphertext);
+
+    return 0;
+}
