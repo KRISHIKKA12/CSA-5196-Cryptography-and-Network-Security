@@ -1,0 +1,53 @@
+#include <stdio.h>
+#include <stdint.h>
+
+int initialPermutation[] = {
+    57, 49, 41, 33, 25, 17, 9,  1,
+    58, 50, 42, 34, 26, 18, 10, 2,
+    59, 51, 43, 35, 27, 19, 11, 3,
+    60, 52, 44, 36, 63, 55, 47, 39,
+    31, 23, 15, 7,  62, 54, 46, 38,
+    30, 22, 14, 6,  61, 53, 45, 37,
+    29, 21, 13, 5,  28, 20, 12, 4
+};
+
+uint32_t circularLeftShift(uint32_t value, int shift) {
+    return ((value << shift) | (value >> (28 - shift))) & 0x0FFFFFFF;
+}
+void generateSubkeys(uint64_t initialKey) {
+    int i;
+    uint64_t key = 0;
+
+    for (i = 0; i < 56; i++) {
+        key |= ((initialKey >> (64 - initialPermutation[i])) & 1) << (55 - i);
+    }
+
+    uint32_t leftHalf = key >> 28;
+    uint32_t rightHalf = key & 0x0FFFFFFF;
+
+    printf("Subkeys:\n");
+
+    for (i = 0; i < 16; i++) {
+        leftHalf = circularLeftShift(leftHalf, 1);
+        rightHalf = circularLeftShift(rightHalf, 1);
+
+        uint64_t combinedHalf = ((uint64_t)leftHalf << 28) | rightHalf;
+        uint64_t subkey = 0;
+        int j;
+
+        for (j = 0; j < 48; j++) {
+            subkey |= ((combinedHalf >> (56 - initialPermutation[j + 28])) & 1) << (47 - j);
+        }
+        printf("Subkey %2d: %06X %06X\n", i + 1, (uint32_t)(subkey >> 24), (uint32_t)(subkey & 0xFFFFFF));
+    }
+}
+
+int main() {
+    uint64_t initialKey = 0x133457799BBCDFF1; 
+
+    printf("Initial Key: %016llX\n\n", initialKey);
+
+    generateSubkeys(initialKey);
+
+    return 0;
+}
